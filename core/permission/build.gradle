@@ -1,0 +1,57 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+
+android {
+    namespace 'com.example.fanpermission'
+    compileSdkVersion 33
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 33
+
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    archiveClassifier = "sources"
+}
+
+publishing {
+    repositories { RepositoryHandler handler ->
+        handler.mavenLocal()
+        handler.maven {
+            url "${rootDir}/repo"
+        }
+    }
+    publications { PublicationContainer publicationContainer ->
+        maven(MavenPublication) {
+            artifact sourceJar
+            afterEvaluate {
+                artifact(tasks.getByName("bundleReleaseAar"))
+            }
+            groupId = "com.milk.library"
+            artifactId = "fanPermission"
+            version = "1.0.0"
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
