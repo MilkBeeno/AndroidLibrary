@@ -20,7 +20,7 @@ import com.example.common.ViewBindingViewHolder
  *
  * 3⃣️ 直接通过 new 方式创建 SimplePagingDataAdapter 对象并设置各监听回调。
  *
- * 4⃣️ 代码示例：
+ * 4⃣️ 代码示例：@see <a href="https://github.com/MilkBeeno/AndroidLibrary/tree/main"</a>
  *
  * @param create 创建 ViewBinding 方式下的 ViewHolder。
  * @param convert 绑定 ViewHolder 数据展示，相当于 onBindViewHolder()
@@ -106,7 +106,7 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
 /**
  * 多类型 Paging3 分页 PagingDataAdapter 的封装，用法如下：
  *
- * 1⃣️ 代码示例：
+ * 1⃣️ 代码示例：@see <a href="https://github.com/MilkBeeno/AndroidLibrary/tree/main"</a>
  *
  * @param viewType 多类型分类。
  * @param create 创建 ViewBinding 方式下的 ViewHolder。
