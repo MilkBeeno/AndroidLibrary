@@ -82,7 +82,7 @@ open class PagingFooterAdapter<V : ViewBinding>(
 
             is LoadState.NotLoading -> {
                 val maxPageSize = pageSize + if (hasHeader) 1 else 0
-                if (loadState.endOfPaginationReached && holder.absoluteAdapterPosition < maxPageSize) {
+                if (loadState.endOfPaginationReached && holder.bindingAdapterPosition < maxPageSize) {
                     convert?.invoke(holder, AppendState.NoMoreData)
                 }
             }
