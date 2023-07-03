@@ -40,7 +40,7 @@ class SimpleTypeActivity : AppCompatActivity() {
 
         // 初始化适配器、将创建 ViewHolder 和 BindViewHolder 给调用处处理
         simpleTypeAdapter = SimpleTypeAdapter {
-            Toast.makeText(this, "我点击的是listener第 $it 个位置回调", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
         }
 
         // 为 RecyclerView 设置适配器

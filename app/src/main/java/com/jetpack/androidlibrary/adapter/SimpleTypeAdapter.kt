@@ -15,23 +15,22 @@ import com.jetpack.androidlibrary.databinding.ItemUserBinding
  */
 class SimpleTypeAdapter(
     // 创建单个手势事件回调、细分每个子项
-    private val listener: (Int) -> Unit
+    private val listener: (String) -> Unit
 ) : SimplePagingDataAdapter<SimpleTypeModel, ItemUserBinding>(
     // 创建 viewHolder
     create = { viewHolder() },
     // 对 itemView 进行数据绑定
-    convert = { data, binding, position ->
+    convert = { data, position ->
         binding.ivUserAvatar.setImageResource(R.drawable.ic_launcher_background)
         binding.tvUserName.text = data.name
         binding.tvUserDescribe.text = data.describe
     },
     // 点击事件区域
-    gestureScope = { viewHolder ->
-        viewHolder.binding.root.setOnClickListener {
+    clickScope = { adapter ->
+        binding.root.setOnClickListener {
             // 因为在 RecyclerView 中添加了头部 Adapter 所以 absoluteAdapterPosition 的位置 index 是不正确的应当减 1
-            val itemModel = getNotNullItem(viewHolder.absoluteAdapterPosition - 1)
-            Log.d("hlc", "当前的User是${itemModel.name}")
-            listener(viewHolder.absoluteAdapterPosition)
+            val itemModel = adapter.getNotNullItem(absoluteAdapterPosition - 1)
+            listener(itemModel.name)
         }
     },
     // 增量更新条件

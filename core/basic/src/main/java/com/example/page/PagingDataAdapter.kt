@@ -24,15 +24,15 @@ import com.example.common.ViewBindingViewHolder
  *
  * @param create 创建 ViewBinding 方式下的 ViewHolder。
  * @param convert 绑定 ViewHolder 数据展示，相当于 onBindViewHolder()
- * @param gestureScope 手势事件监听区域、处理手势的时候需要特别注意的是，如果添加了 HeaderAdapter，获取 position 需要减 1
+ * @param clickScope 手势事件监听区域、处理手势的时候需要特别注意的是，如果添加了 HeaderAdapter，获取 position 需要减 1
  * @param refreshedListener 下拉刷新状态监听。
  * @param appendedListener 上拉加载更多状态监听。
  * @param diffCallback 增量更新的条件。
  */
 open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
     private var create: (ViewGroup.() -> ViewBindingViewHolder<V>),
-    private var convert: ((T, V, Int) -> Unit)? = null,
-    private var gestureScope: (SimplePagingDataAdapter<T, V>.(ViewBindingViewHolder<V>) -> Unit)? = null,
+    private var convert: (ViewBindingViewHolder<V>.(T, Int) -> Unit)? = null,
+    private var clickScope: (ViewBindingViewHolder<V>.(SimplePagingDataAdapter<T, V>) -> Unit)? = null,
     private var refreshedListener: ((RefreshState) -> Unit)? = null,
     private var appendedListener: ((AppendState) -> Unit)? = null,
     private var diffCallback: DiffUtil.ItemCallback<T> = diffUtil()
@@ -47,6 +47,7 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
             when (combinedLoadStates.source.refresh) {
                 is LoadState.Loading -> {
                     isRefreshing = true
+                    refreshedListener?.invoke(RefreshState.Loading)
                 }
 
                 is LoadState.NotLoading -> {
@@ -73,6 +74,7 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
             when (combinedLoadStates.source.append) {
                 is LoadState.Loading -> {
                     isAppending = true
+                    appendedListener?.invoke(AppendState.Loading)
                 }
 
                 is LoadState.NotLoading -> {
@@ -90,11 +92,11 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
     }
 
     override fun onBindViewHolder(holder: ViewBindingViewHolder<V>, position: Int) {
-        convert?.invoke(getNotNullItem(position), holder.binding, position)
+        convert?.invoke(holder, getNotNullItem(position), position)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewBindingViewHolder<V> {
-        return create(parent).apply { gestureScope?.invoke(this@SimplePagingDataAdapter, this) }
+        return create(parent).apply { clickScope?.invoke(this, this@SimplePagingDataAdapter) }
     }
 
     /** 获取指定单项 Item 的数据、若为空则抛出异常 */
@@ -111,7 +113,7 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
  * @param viewType 多类型分类。
  * @param create 创建 ViewBinding 方式下的 ViewHolder。
  * @param convert 绑定 ViewHolder 数据展示，相当于 onBindViewHolder()
- * @param gestureScope 手势事件监听区域、处理手势的时候需要特别注意的是，如果添加了 HeaderAdapter，获取 position 需要减 1
+ * @param clickScope 手势事件监听区域、处理手势的时候需要特别注意的是，如果添加了 HeaderAdapter，获取 position 需要减 1
  * @param refreshedListener 下拉刷新状态监听。
  * @param appendedListener 上拉加载更多状态监听。
  * @param diffCallback 增量更新条件。
@@ -120,7 +122,7 @@ open class MultiplePagingDataAdapter<T : Any>(
     private var viewType: (T.() -> Int),
     private var create: (ViewGroup.(Int) -> ViewHolder),
     private var convert: ((T, ViewHolder, Int) -> Unit)? = null,
-    private var gestureScope: (MultiplePagingDataAdapter<T>.(Int, ViewHolder) -> Unit)? = null,
+    private var clickScope: (MultiplePagingDataAdapter<T>.(Int, ViewHolder) -> Unit)? = null,
     private var refreshedListener: ((RefreshState) -> Unit)? = null,
     private var appendedListener: ((AppendState) -> Unit)? = null,
     private var diffCallback: DiffUtil.ItemCallback<T> = diffUtil()
@@ -135,6 +137,7 @@ open class MultiplePagingDataAdapter<T : Any>(
             when (combinedLoadStates.source.refresh) {
                 is LoadState.Loading -> {
                     isRefreshing = true
+                    refreshedListener?.invoke(RefreshState.Loading)
                 }
 
                 is LoadState.NotLoading -> {
@@ -161,6 +164,7 @@ open class MultiplePagingDataAdapter<T : Any>(
             when (combinedLoadStates.source.append) {
                 is LoadState.Loading -> {
                     isAppending = true
+                    appendedListener?.invoke(AppendState.Success)
                 }
 
                 is LoadState.NotLoading -> {
@@ -186,10 +190,10 @@ open class MultiplePagingDataAdapter<T : Any>(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return create(parent, viewType).apply { gestureScope?.invoke(this@MultiplePagingDataAdapter, viewType, this) }
+        return create(parent, viewType).apply { clickScope?.invoke(this@MultiplePagingDataAdapter, viewType, this) }
     }
 
-    /** 获取指定单项 Item 的数据、若为空则抛出异常 */
+    /** 获取指定单项 Item 的数据、若为空则抛出异常。 */
     fun getNotNullItem(@IntRange(from = 0) position: Int): T {
         return checkNotNull(getItem(position))
     }

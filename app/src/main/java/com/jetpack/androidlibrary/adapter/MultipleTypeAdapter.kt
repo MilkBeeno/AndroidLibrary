@@ -2,9 +2,6 @@ package com.jetpack.androidlibrary.adapter
 
 import android.util.Log
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.example.common.ViewBindingViewHolder
 import com.example.common.convertViewBinding
 import com.example.common.viewHolder
 import com.example.page.MultiplePagingDataAdapter
@@ -46,7 +43,7 @@ class MultipleTypeAdapter(
         }
     },
     // 点击事件区域
-    gestureScope = { type, holder ->
+    clickScope = { type, holder ->
         when (type) {
             0 -> {
                 val binding = holder.convertViewBinding<ItemUserBinding>()
