@@ -25,6 +25,7 @@ import com.example.common.ViewBindingViewHolder
  * @param create 创建 ViewBinding 方式下的 ViewHolder。
  * @param convert 绑定 ViewHolder 数据展示，相当于 onBindViewHolder()
  * @param clickScope 手势事件监听区域、处理手势的时候需要特别注意的是，如果添加了 HeaderAdapter，获取 position 需要减 1
+ * @param hasHeader 是否有 header 此处一定要注意，若有需改变状态为 true 否则影响 itemCount 的计算导致状态设置错误
  * @param refreshedListener 下拉刷新状态监听。
  * @param appendedListener 上拉加载更多状态监听。
  * @param diffCallback 增量更新的条件。
@@ -33,6 +34,7 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
     private var create: (ViewGroup.() -> ViewBindingViewHolder<V>),
     private var convert: (ViewBindingViewHolder<V>.(T, Int) -> Unit)? = null,
     private var clickScope: (ViewBindingViewHolder<V>.(SimplePagingDataAdapter<T, V>) -> Unit)? = null,
+    private val hasHeader: Boolean = false,
     private var refreshedListener: ((RefreshState) -> Unit)? = null,
     private var appendedListener: ((AppendState) -> Unit)? = null,
     private var diffCallback: DiffUtil.ItemCallback<T> = diffUtil()
@@ -44,6 +46,7 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
     init {
         // 数据加载状态监听
         addLoadStateListener { combinedLoadStates ->
+            val maxCount = if (hasHeader) 1 else 0
             when (combinedLoadStates.source.refresh) {
                 is LoadState.Loading -> {
                     isRefreshing = true
@@ -53,7 +56,7 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
                 is LoadState.NotLoading -> {
                     if (isRefreshing) {
                         isRefreshing = false
-                        if (itemCount <= 0) {
+                        if (itemCount <= maxCount) {
                             refreshedListener?.invoke(RefreshState.Empty)
                         } else {
                             refreshedListener?.invoke(RefreshState.Success)
@@ -63,7 +66,7 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
 
                 else -> {
                     refreshedListener?.invoke(
-                        if (itemCount < 0) {
+                        if (itemCount < maxCount) {
                             RefreshState.Error
                         } else {
                             RefreshState.Failed
@@ -114,6 +117,7 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
  * @param create 创建 ViewBinding 方式下的 ViewHolder。
  * @param convert 绑定 ViewHolder 数据展示，相当于 onBindViewHolder()
  * @param clickScope 手势事件监听区域、处理手势的时候需要特别注意的是，如果添加了 HeaderAdapter，获取 position 需要减 1
+ * @param hasHeader 是否有 header 此处一定要注意，若有需改变状态为 true 否则影响 itemCount 的计算导致状态设置错误
  * @param refreshedListener 下拉刷新状态监听。
  * @param appendedListener 上拉加载更多状态监听。
  * @param diffCallback 增量更新条件。
@@ -123,6 +127,7 @@ open class MultiplePagingDataAdapter<T : Any>(
     private var create: (ViewGroup.(Int) -> ViewHolder),
     private var convert: (ViewHolder.(T, Int) -> Unit)? = null,
     private var clickScope: (ViewHolder.(Int, MultiplePagingDataAdapter<T>) -> Unit)? = null,
+    private val hasHeader: Boolean = false,
     private var refreshedListener: ((RefreshState) -> Unit)? = null,
     private var appendedListener: ((AppendState) -> Unit)? = null,
     private var diffCallback: DiffUtil.ItemCallback<T> = diffUtil()
@@ -134,6 +139,7 @@ open class MultiplePagingDataAdapter<T : Any>(
     init {
         // 数据加载状态监听
         addLoadStateListener { combinedLoadStates ->
+            val maxCount = if (hasHeader) 1 else 0
             when (combinedLoadStates.source.refresh) {
                 is LoadState.Loading -> {
                     isRefreshing = true
@@ -143,7 +149,7 @@ open class MultiplePagingDataAdapter<T : Any>(
                 is LoadState.NotLoading -> {
                     if (isRefreshing) {
                         isRefreshing = false
-                        if (itemCount <= 0) {
+                        if (itemCount <= maxCount) {
                             refreshedListener?.invoke(RefreshState.Empty)
                         } else {
                             refreshedListener?.invoke(RefreshState.Success)
@@ -153,7 +159,7 @@ open class MultiplePagingDataAdapter<T : Any>(
 
                 else -> {
                     refreshedListener?.invoke(
-                        if (itemCount < 0) {
+                        if (itemCount < maxCount) {
                             RefreshState.Error
                         } else {
                             RefreshState.Failed
