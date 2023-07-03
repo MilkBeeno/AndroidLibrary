@@ -15,7 +15,7 @@ import com.jetpack.androidlibrary.databinding.ItemUserBinding
  */
 class MultipleTypeAdapter(
     // 创建单个手势事件回调、细分每个子项
-    private val listener: () -> Unit
+    private val listener: (String) -> Unit
 ) : MultiplePagingDataAdapter<MultipleTypeModel>(
     // 为每个子项设置类型 type 值
     viewType = { type },
@@ -27,35 +27,34 @@ class MultipleTypeAdapter(
         }
     },
     // 对 itemView 进行数据绑定
-    convert = { data, holder, position ->
+    convert = { data, position ->
         when (data.type) {
             0 -> {
-                val binding = holder.convertViewBinding<ItemUserBinding>()
+                val binding = convertViewBinding<ItemUserBinding>()
                 binding.ivUserAvatar.setImageResource(R.drawable.ic_launcher_background)
                 binding.tvUserName.text = data.user?.name
                 binding.tvUserDescribe.text = data.user?.describe
             }
 
             else -> {
-                val binding = holder.convertViewBinding<ItemTagBinding>()
+                val binding = convertViewBinding<ItemTagBinding>()
                 binding.tvTag.text = "这个Tag是".plus(data.tag?.name)
             }
         }
     },
     // 点击事件区域
-    clickScope = { type, holder ->
+    clickScope = { type, adapter ->
         when (type) {
             0 -> {
-                val binding = holder.convertViewBinding<ItemUserBinding>()
+                val binding = convertViewBinding<ItemUserBinding>()
                 binding.root.setOnClickListener {
-                    val itemModel = getNotNullItem(holder.absoluteAdapterPosition - 1)
-                    Log.d("hlc", "当前的User是${itemModel.user?.name}")
-                    listener()
+                    val itemModel = adapter.getNotNullItem(absoluteAdapterPosition - 1)
+                    listener(itemModel.user?.name.toString())
                 }
             }
 
             else -> {
-                holder.convertViewBinding<ItemTagBinding>()
+                convertViewBinding<ItemTagBinding>()
                 // Do Nothing There.
             }
         }

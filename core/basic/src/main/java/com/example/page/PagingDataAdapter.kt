@@ -121,8 +121,8 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
 open class MultiplePagingDataAdapter<T : Any>(
     private var viewType: (T.() -> Int),
     private var create: (ViewGroup.(Int) -> ViewHolder),
-    private var convert: ((T, ViewHolder, Int) -> Unit)? = null,
-    private var clickScope: (MultiplePagingDataAdapter<T>.(Int, ViewHolder) -> Unit)? = null,
+    private var convert: (ViewHolder.(T, Int) -> Unit)? = null,
+    private var clickScope: (ViewHolder.(Int, MultiplePagingDataAdapter<T>) -> Unit)? = null,
     private var refreshedListener: ((RefreshState) -> Unit)? = null,
     private var appendedListener: ((AppendState) -> Unit)? = null,
     private var diffCallback: DiffUtil.ItemCallback<T> = diffUtil()
@@ -182,7 +182,7 @@ open class MultiplePagingDataAdapter<T : Any>(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        getItem(position)?.let { convert?.invoke(it, holder, position) }
+        getItem(position)?.let { convert?.invoke(holder, it, position) }
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -190,7 +190,7 @@ open class MultiplePagingDataAdapter<T : Any>(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return create(parent, viewType).apply { clickScope?.invoke(this@MultiplePagingDataAdapter, viewType, this) }
+        return create(parent, viewType).apply { clickScope?.invoke(this, viewType, this@MultiplePagingDataAdapter) }
     }
 
     /** 获取指定单项 Item 的数据、若为空则抛出异常。 */
