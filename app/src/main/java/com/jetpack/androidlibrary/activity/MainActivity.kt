@@ -16,5 +16,8 @@ class MainActivity : AppCompatActivity() {
         binding.multipleType.setOnClickListener {
             MultipleTypeActivity.create(this)
         }
+        binding.nestedView.setOnClickListener {
+            NestedScrollViewActivity.create(this)
+        }
     }
 }

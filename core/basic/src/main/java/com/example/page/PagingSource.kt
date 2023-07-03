@@ -15,7 +15,7 @@ class PageWrapper<Key : Any, Value : Any>(
     private val prefetchDistance: Int = 1,
     private val pagingSourceFactory: () -> PagingSource<Key, Value>
 ) {
-    val dataFlow: Flow<PagingData<Value>>
+    val flow: Flow<PagingData<Value>>
         get() = Pager(
             config = PagingConfig(
                 pageSize = pageSize,

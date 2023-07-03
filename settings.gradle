@@ -16,3 +16,4 @@ rootProject.name = "AndroidLibrary"
 include ':app'
 include ':core:permission'
 include ':core:basic'
+include ':core:scrollList'

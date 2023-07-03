@@ -13,6 +13,9 @@
         android:theme="@style/Theme.AndroidLibrary"
         tools:targetApi="31">
         <activity
+            android:name=".activity.NestedScrollViewActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.MultipleTypeActivity"
             android:exported="false" />
         <activity

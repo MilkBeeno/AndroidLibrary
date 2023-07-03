@@ -22,44 +22,6 @@ import com.example.common.ViewBindingViewHolder
  *
  * 4⃣️ 代码示例：
  *
- *        class SimpleTypeAdapter(
- *             // 创建单个手势事件回调、细分每个子项
- *             private val listener: (Int) -> Unit
- *         ) : SimplePagingDataAdapter<SimpleTypeModel, ItemUserBinding>(
- *
- *             // 创建 viewHolder
- *             create = { viewHolder() },
- *
- *             // 对 itemView 进行数据绑定
- *             convert = { data, binding, position ->
- *                 binding.ivUserAvatar.setImageResource(R.drawable.ic_launcher_background)
- *                 binding.tvUserName.text = data.name
- *                 binding.tvUserDescribe.text = data.describe
- *             },
- *
- *             // 点击事件区域
- *             gestureScope = { viewHolder ->
- *                 val binding = viewHolder.binding
- *                 binding.root.setOnClickListener {
- *                     // 因为在 RecyclerView 中添加了头部 Adapter 所以 absoluteAdapterPosition 的位置 index 是不正确的应当减 1
- *                     val itemModel = getNotNullItem(viewHolder.absoluteAdapterPosition - 1)
- *                     Log.d("hlc", "当前的User是${itemModel.name}")
- *                     listener(viewHolder.absoluteAdapterPosition)
- *                 }
- *             },
- *
- *             // 增量更新条件
- *             diffCallback = object : DiffUtil.ItemCallback<SimpleTypeModel>() {
- *                 override fun areItemsTheSame(oldItem: SimpleTypeModel, newItem: SimpleTypeModel): Boolean {
- *                     return oldItem.name == newItem.name
- *                 }
- *
- *                 override fun areContentsTheSame(oldItem: SimpleTypeModel, newItem: SimpleTypeModel): Boolean {
- *                     return oldItem.name == newItem.name
- *                 }
- *             }
- *         )
- *
  * @param create 创建 ViewBinding 方式下的 ViewHolder。
  * @param convert 绑定 ViewHolder 数据展示，相当于 onBindViewHolder()
  * @param gestureScope 手势事件监听区域、处理手势的时候需要特别注意的是，如果添加了 HeaderAdapter，获取 position 需要减 1
@@ -121,7 +83,7 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
                 }
 
                 else -> {
-                    appendedListener?.invoke(AppendState.Failed)
+                    appendedListener?.invoke(AppendState.Error)
                 }
             }
         }
@@ -145,65 +107,6 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
  * 多类型 Paging3 分页 PagingDataAdapter 的封装，用法如下：
  *
  * 1⃣️ 代码示例：
- *
- *           class MultipleTypeAdapter(
- *               // 创建单个手势事件回调、细分每个子项
- *               private val listener: () -> Unit
- *           ) : MultiplePagingDataAdapter<MultipleTypeModel>(
- *               // 为每个子项设置类型 type 值
- *               viewType = { type },
- *               // 创建 viewHolder
- *               create = {
- *                   when (it) {
- *                       0 -> viewHolder<ItemUserBinding>()
- *                       else -> viewHolder<ItemTagBinding>()
- *                   }
- *               },
- *               // 对 itemView 进行数据绑定
- *               convert = { data, holder, position ->
- *                   when (data.type) {
- *                       0 -> {
- *                           val binding = holder.convertViewBinding<ItemUserBinding>()
- *                           binding.ivUserAvatar.setImageResource(R.drawable.ic_launcher_background)
- *                           binding.tvUserName.text = data.user?.name
- *                           binding.tvUserDescribe.text = data.user?.describe
- *                       }
- *
- *                       else -> {
- *                           val binding = holder.convertViewBinding<ItemTagBinding>()
- *                           binding.tvTag.text = "这个Tag是".plus(data.tag?.name)
- *                       }
- *                   }
- *               },
- *               // 点击事件区域
- *               gestureScope = { type, holder ->
- *                   when (type) {
- *                       0 -> {
- *                           val binding = holder.convertViewBinding<ItemUserBinding>()
- *                           binding.root.setOnClickListener {
- *                               val itemModel = getNotNullItem(holder.absoluteAdapterPosition)
- *                               Log.d("hlc", "当前的User是${itemModel.user?.name}")
- *                               listener()
- *                           }
- *                       }
- *
- *                       else -> {
- *                           holder.convertViewBinding<ItemTagBinding>()
- *                           // Do Nothing There.
- *                       }
- *                   }
- *               },
- *               // 增量更新条件
- *               diffCallback = object : DiffUtil.ItemCallback<MultipleTypeModel>() {
- *                   override fun areItemsTheSame(oldItem: MultipleTypeModel, newItem: MultipleTypeModel): Boolean {
- *                       return oldItem.type == newItem.type
- *                   }
- *
- *                   override fun areContentsTheSame(oldItem: MultipleTypeModel, newItem: MultipleTypeModel): Boolean {
- *                       return oldItem.type == newItem.type
- *                   }
- *               }
- *           )
  *
  * @param viewType 多类型分类。
  * @param create 创建 ViewBinding 方式下的 ViewHolder。
@@ -268,7 +171,7 @@ open class MultiplePagingDataAdapter<T : Any>(
                 }
 
                 else -> {
-                    appendedListener?.invoke(AppendState.Failed)
+                    appendedListener?.invoke(AppendState.Error)
                 }
             }
         }
@@ -305,28 +208,3 @@ private fun <T : Any> diffUtil(): DiffUtil.ItemCallback<T> {
     }
 }
 
-/**
- * 列表数据加载的一个状态、由本地定义的一个状态适配 Paging3 的 LoadState 下拉刷新的状态。
- *
- * @property Success 表示 网络请求成功并且数据不为空。
- * @property Empty   表示 网络请求成功但数据为空。
- * @property Error   表示 网络请求失败且列表为空、通常是第一次刷新。
- * @property Failed  表示 网络请求失败但列表不为空、通常是第一次网络获取了数据、或者数据库中保存有数据。
- */
-sealed class RefreshState {
-    object Success : RefreshState()
-    object Empty : RefreshState()
-    object Error : RefreshState()
-    object Failed : RefreshState()
-}
-
-/**
- * 列表数据加载的一个状态、由本地定义的一个状态适配 Paging3 的 LoadState 上拉加载的状态。
- *
- * @property Success 表示成功。
- * @property Failed  表示失败。
- */
-sealed class AppendState {
-    object Success : AppendState()
-    object Failed : AppendState()
-}
