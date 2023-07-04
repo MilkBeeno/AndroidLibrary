@@ -56,22 +56,13 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
                 is LoadState.NotLoading -> {
                     if (isRefreshing) {
                         isRefreshing = false
-                        if (itemCount <= maxCount) {
-                            refreshedListener?.invoke(RefreshState.Empty)
-                        } else {
-                            refreshedListener?.invoke(RefreshState.Success)
-                        }
+                        refreshedListener?.invoke(if (itemCount <= maxCount) RefreshState.Empty else RefreshState.Success)
                     }
                 }
 
                 else -> {
-                    refreshedListener?.invoke(
-                        if (itemCount < maxCount) {
-                            RefreshState.Error
-                        } else {
-                            RefreshState.Failed
-                        }
-                    )
+                    isRefreshing = false
+                    refreshedListener?.invoke(if (itemCount < maxCount) RefreshState.Error else RefreshState.Failed)
                 }
             }
             when (combinedLoadStates.source.append) {
@@ -87,7 +78,8 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
                     }
                 }
 
-                else -> {
+                is LoadState.Error -> {
+                    isRefreshing = false
                     appendedListener?.invoke(AppendState.Error)
                 }
             }
@@ -149,28 +141,19 @@ open class MultiplePagingDataAdapter<T : Any>(
                 is LoadState.NotLoading -> {
                     if (isRefreshing) {
                         isRefreshing = false
-                        if (itemCount <= maxCount) {
-                            refreshedListener?.invoke(RefreshState.Empty)
-                        } else {
-                            refreshedListener?.invoke(RefreshState.Success)
-                        }
+                        refreshedListener?.invoke(if (itemCount <= maxCount) RefreshState.Empty else RefreshState.Success)
                     }
                 }
 
-                else -> {
-                    refreshedListener?.invoke(
-                        if (itemCount < maxCount) {
-                            RefreshState.Error
-                        } else {
-                            RefreshState.Failed
-                        }
-                    )
+                is LoadState.Error -> {
+                    isRefreshing = false
+                    refreshedListener?.invoke(if (itemCount < maxCount) RefreshState.Error else RefreshState.Failed)
                 }
             }
             when (combinedLoadStates.source.append) {
                 is LoadState.Loading -> {
                     isAppending = true
-                    appendedListener?.invoke(AppendState.Success)
+                    appendedListener?.invoke(AppendState.Loading)
                 }
 
                 is LoadState.NotLoading -> {
@@ -180,7 +163,8 @@ open class MultiplePagingDataAdapter<T : Any>(
                     }
                 }
 
-                else -> {
+                is LoadState.Error -> {
+                    isAppending = false
                     appendedListener?.invoke(AppendState.Error)
                 }
             }
