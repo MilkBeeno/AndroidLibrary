@@ -22,18 +22,18 @@ import com.example.common.ViewBindingViewHolder
  *
  * 4⃣️ 代码示例：@see <a href="https://github.com/MilkBeeno/AndroidLibrary/tree/main"</a>
  *
- * @param create 创建 ViewBinding 方式下的 ViewHolder。
+ * @param create 创建 ViewBinding 方式下的 ViewHolder
  * @param convert 绑定 ViewHolder 数据展示，相当于 onBindViewHolder()
  * @param clickScope 手势事件监听区域、处理手势的时候需要特别注意的是，如果添加了 HeaderAdapter，获取 position 需要减 1
  * @param hasHeader 是否有 header 此处一定要注意，若有需改变状态为 true 否则影响 itemCount 的计算导致状态设置错误
- * @param refreshedListener 下拉刷新状态监听。
- * @param appendedListener 上拉加载更多状态监听。
- * @param diffCallback 增量更新的条件。
+ * @param refreshedListener 下拉刷新状态监听
+ * @param appendedListener 上拉加载更多状态监听
+ * @param diffCallback 增量更新的条件
  */
 open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
     private var create: (ViewGroup.() -> ViewBindingViewHolder<V>),
     private var convert: (ViewBindingViewHolder<V>.(T, Int) -> Unit)? = null,
-    private var clickScope: (ViewBindingViewHolder<V>.(SimplePagingDataAdapter<T, V>) -> Unit)? = null,
+    private var clickScope: (ViewBindingViewHolder<V>.(SimplePagingDataAdapter<T, V>, Boolean) -> Unit)? = null,
     private val hasHeader: Boolean = false,
     private var refreshedListener: ((RefreshState) -> Unit)? = null,
     private var appendedListener: ((AppendState) -> Unit)? = null,
@@ -91,7 +91,9 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewBindingViewHolder<V> {
-        return create(parent).apply { clickScope?.invoke(this, this@SimplePagingDataAdapter) }
+        return create(parent).apply {
+            clickScope?.invoke(this, this@SimplePagingDataAdapter, hasHeader)
+        }
     }
 
     /** 获取指定单项 Item 的数据、若为空则抛出异常 */
@@ -105,20 +107,20 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
  *
  * 1⃣️ 代码示例：@see <a href="https://github.com/MilkBeeno/AndroidLibrary/tree/main"</a>
  *
- * @param viewType 多类型分类。
- * @param create 创建 ViewBinding 方式下的 ViewHolder。
+ * @param viewType 多类型分类
+ * @param create 创建 ViewBinding 方式下的 ViewHolder
  * @param convert 绑定 ViewHolder 数据展示，相当于 onBindViewHolder()
  * @param clickScope 手势事件监听区域、处理手势的时候需要特别注意的是，如果添加了 HeaderAdapter，获取 position 需要减 1
  * @param hasHeader 是否有 header 此处一定要注意，若有需改变状态为 true 否则影响 itemCount 的计算导致状态设置错误
- * @param refreshedListener 下拉刷新状态监听。
- * @param appendedListener 上拉加载更多状态监听。
- * @param diffCallback 增量更新条件。
+ * @param refreshedListener 下拉刷新状态监听
+ * @param appendedListener 上拉加载更多状态监听
+ * @param diffCallback 增量更新条件
  */
 open class MultiplePagingDataAdapter<T : Any>(
     private var viewType: (T.() -> Int),
     private var create: (ViewGroup.(Int) -> ViewHolder),
     private var convert: (ViewHolder.(T, Int) -> Unit)? = null,
-    private var clickScope: (ViewHolder.(Int, MultiplePagingDataAdapter<T>) -> Unit)? = null,
+    private var clickScope: (ViewHolder.(Int, MultiplePagingDataAdapter<T>, Boolean) -> Unit)? = null,
     private val hasHeader: Boolean = false,
     private var refreshedListener: ((RefreshState) -> Unit)? = null,
     private var appendedListener: ((AppendState) -> Unit)? = null,
@@ -180,7 +182,9 @@ open class MultiplePagingDataAdapter<T : Any>(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return create(parent, viewType).apply { clickScope?.invoke(this, viewType, this@MultiplePagingDataAdapter) }
+        return create(parent, viewType).apply {
+            clickScope?.invoke(this, viewType, this@MultiplePagingDataAdapter, hasHeader)
+        }
     }
 
     /** 获取指定单项 Item 的数据、若为空则抛出异常。 */

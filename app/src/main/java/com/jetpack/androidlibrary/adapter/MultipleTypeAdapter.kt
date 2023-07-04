@@ -44,12 +44,12 @@ class MultipleTypeAdapter(
         }
     },
     // 点击事件区域
-    clickScope = { type, adapter ->
+    clickScope = { type, adapter, hasHeader ->
         when (type) {
             0 -> {
                 val binding = convertViewBinding<ItemUserBinding>()
                 binding.root.setOnClickListener {
-                    val itemModel = adapter.getNotNullItem(absoluteAdapterPosition - 1)
+                    val itemModel = adapter.getNotNullItem(absoluteAdapterPosition - if (hasHeader) 1 else 0)
                     listener(itemModel.user?.name.toString())
                 }
             }

@@ -30,7 +30,7 @@ class PageWrapper<Key : Any, Value : Any>(
  * Paging3 网络请求数据请求状态判断、自动处理分页的逻辑。
  *
  * @param netWorkRequest 网络请求数据状态、以固定形式的 PagingResponse<T>,
- * 自动进行分页处理的逻辑回调在 load() 函数中。
+ * 自动进行分页处理的逻辑回调在 load() 函数中
  */
 class PageSource<T : Any>(private val netWorkRequest: suspend (Int) -> PageResponse<T>) : PagingSource<Int, T>() {
     // 实现必须定义如何从已加载分页数据的中间恢复刷新，使用 state.anchorPosition 作为最近访问的索引来映射正确的初始键。

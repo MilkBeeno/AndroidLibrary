@@ -28,10 +28,10 @@ class SimpleTypeAdapter(
         binding.tvUserDescribe.text = data.describe
     },
     // 点击事件区域
-    clickScope = { adapter ->
+    clickScope = { adapter, hasHeader ->
         binding.root.setOnClickListener {
             // 因为在 RecyclerView 中添加了头部 Adapter 所以 absoluteAdapterPosition 的位置 index 是不正确的应当减 1
-            val itemModel = adapter.getNotNullItem(absoluteAdapterPosition - 1)
+            val itemModel = adapter.getNotNullItem(absoluteAdapterPosition - if (hasHeader) 1 else 0)
             listener(itemModel.name)
         }
     },
@@ -41,7 +41,8 @@ class SimpleTypeAdapter(
             RefreshState.Error -> {
                 Log.d("hlc", "发生了错误")
             }
-            RefreshState.Success->{
+
+            RefreshState.Success -> {
                 refresh()
             }
 
