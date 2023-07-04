@@ -14,6 +14,7 @@ import com.jetpack.androidlibrary.adapter.SimpleHeaderAdapter
 import com.jetpack.androidlibrary.adapter.SimpleTypeAdapter
 import com.jetpack.androidlibrary.databinding.ActivitySimpleTypeBinding
 import com.jetpack.androidlibrary.viewmodel.SimpleTypeViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -29,6 +30,10 @@ class SimpleTypeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding.srl.setOnRefreshListener {
+            simpleTypeAdapter.refresh()
+        }
+
         // 提前设置 RecyclerView 的布局方式、不然无法添加头布局或尾布局
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -39,18 +44,22 @@ class SimpleTypeActivity : AppCompatActivity() {
         val footerAdapter = SimpleFooterAdapter()
 
         // 初始化适配器、将创建 ViewHolder 和 BindViewHolder 给调用处处理
-        simpleTypeAdapter = SimpleTypeAdapter {
+        simpleTypeAdapter = SimpleTypeAdapter({
             Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+        }) {
+            binding.srl.isRefreshing = false
+            binding.recyclerView.smoothScrollToPosition(0)
         }
 
         // 为 RecyclerView 设置适配器
         binding.recyclerView.adapter = simpleTypeAdapter
             .withLoadStateHeaderAndFooter(headerAdapter, footerAdapter)
+        //.withLoadStateFooter(footerAdapter)
 
         // 通过观察请求网络数据或添加本地数据
         lifecycle.coroutineScope.launch {
             simpleTypeViewModel.pageWrapper.flow.collectLatest {
-                simpleTypeAdapter.submitData(it)
+                simpleTypeAdapter.submitData(lifecycle, it)
             }
         }
     }

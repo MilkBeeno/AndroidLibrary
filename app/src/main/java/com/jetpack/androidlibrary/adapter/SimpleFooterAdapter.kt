@@ -35,6 +35,10 @@ class SimpleFooterAdapter : PagingFooterAdapter<ItemFooterBinding>(
                 Log.d("hlc", "SimpleFooter Error")
             }
 
+            AppendState.NoMoreData -> {
+                Log.d("hlc", "SimpleFooter NoMoreData")
+            }
+
             else -> Unit
         }
         binding.tvFooter.text = "我是单类型尾部"

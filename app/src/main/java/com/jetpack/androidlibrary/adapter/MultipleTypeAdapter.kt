@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.example.common.convertViewBinding
 import com.example.common.viewHolder
 import com.example.page.MultiplePagingDataAdapter
+import com.example.page.RefreshState
 import com.jetpack.androidlibrary.R
 import com.jetpack.androidlibrary.data.MultipleTypeModel
 import com.jetpack.androidlibrary.databinding.ItemTagBinding
@@ -20,8 +21,8 @@ class MultipleTypeAdapter(
     // 为每个子项设置类型 type 值
     viewType = { type },
     // 创建 viewHolder
-    create = {
-        when (it) {
+    create = { viewType ->
+        when (viewType) {
             0 -> viewHolder<ItemUserBinding>()
             else -> viewHolder<ItemTagBinding>()
         }
@@ -57,6 +58,16 @@ class MultipleTypeAdapter(
                 convertViewBinding<ItemTagBinding>()
                 // Do Nothing There.
             }
+        }
+    },
+    hasHeader = true,
+    refreshedListener = {
+        when (it) {
+            RefreshState.Error -> {
+                Log.d("hlc", "发生了错误")
+            }
+
+            else -> Unit
         }
     },
     // 增量更新条件

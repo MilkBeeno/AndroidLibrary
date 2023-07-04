@@ -3,6 +3,7 @@ package com.jetpack.androidlibrary.adapter
 import android.util.Log
 import androidx.recyclerview.widget.DiffUtil
 import com.example.common.viewHolder
+import com.example.page.RefreshState
 import com.example.page.SimplePagingDataAdapter
 import com.jetpack.androidlibrary.R
 import com.jetpack.androidlibrary.data.SimpleTypeModel
@@ -15,7 +16,8 @@ import com.jetpack.androidlibrary.databinding.ItemUserBinding
  */
 class SimpleTypeAdapter(
     // 创建单个手势事件回调、细分每个子项
-    private val listener: (String) -> Unit
+    private val listener: (String) -> Unit,
+    private var refresh: () -> Unit
 ) : SimplePagingDataAdapter<SimpleTypeModel, ItemUserBinding>(
     // 创建 viewHolder
     create = { viewHolder() },
@@ -31,6 +33,19 @@ class SimpleTypeAdapter(
             // 因为在 RecyclerView 中添加了头部 Adapter 所以 absoluteAdapterPosition 的位置 index 是不正确的应当减 1
             val itemModel = adapter.getNotNullItem(absoluteAdapterPosition - 1)
             listener(itemModel.name)
+        }
+    },
+    hasHeader = true,
+    refreshedListener = {
+        when (it) {
+            RefreshState.Error -> {
+                Log.d("hlc", "发生了错误")
+            }
+            RefreshState.Success->{
+                refresh()
+            }
+
+            else -> Unit
         }
     },
     // 增量更新条件

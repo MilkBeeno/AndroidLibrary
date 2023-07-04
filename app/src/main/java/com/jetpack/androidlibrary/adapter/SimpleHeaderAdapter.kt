@@ -10,7 +10,7 @@ import com.jetpack.androidlibrary.databinding.ItemHeaderBinding
 /**
  * Header 的第一种写法、创建类分离代码、减少 Activity 代码
  */
-class SimpleHeaderAdapter : PagingHeaderAdapter<ItemHeaderBinding>(
+class SimpleHeaderAdapter() : PagingHeaderAdapter<ItemHeaderBinding>(
     // 创建 ViewHolder 反射原理
     create = { viewHolder() },
     // 处理点击事件区域
