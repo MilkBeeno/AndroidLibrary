@@ -51,21 +51,6 @@ class MultipleTypeActivity : AppCompatActivity() {
             },
             // 更新 UI 区域
             convert = {
-                when (it) {
-                    RefreshState.Loading -> {
-                        Log.d("hlc", "MultipleHeader Loading")
-                    }
-
-                    RefreshState.Success -> {
-                        Log.d("hlc", "MultipleHeader Success")
-                    }
-
-                    RefreshState.Error -> {
-                        Log.d("hlc", "MultipleHeader Error")
-                    }
-
-                    else -> Unit
-                }
                 binding.tvHeader.text = "我是多类型头部"
             })
 

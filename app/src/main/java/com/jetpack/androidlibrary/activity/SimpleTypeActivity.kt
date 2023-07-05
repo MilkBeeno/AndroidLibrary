@@ -9,12 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.coroutineScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.common.viewBinding
-import com.jetpack.androidlibrary.adapter.SimpleFooterAdapter
-import com.jetpack.androidlibrary.adapter.SimpleHeaderAdapter
 import com.jetpack.androidlibrary.adapter.SimpleTypeAdapter
+import com.jetpack.androidlibrary.adapter.simpleFooterAdapter
+import com.jetpack.androidlibrary.adapter.simpleHeaderAdapter
 import com.jetpack.androidlibrary.databinding.ActivitySimpleTypeBinding
 import com.jetpack.androidlibrary.viewmodel.SimpleTypeViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -30,6 +29,7 @@ class SimpleTypeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding.srl.setOnRefreshListener {
             simpleTypeAdapter.refresh()
         }
@@ -38,10 +38,10 @@ class SimpleTypeActivity : AppCompatActivity() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
         // RecyclerView 头布局
-        val headerAdapter = SimpleHeaderAdapter()
+        val headerAdapter = simpleHeaderAdapter()
 
         // RecyclerView 尾布局、可以是 LoadNoMoreData、LoadMoreError
-        val footerAdapter = SimpleFooterAdapter()
+        val footerAdapter = simpleFooterAdapter()
 
         // 初始化适配器、将创建 ViewHolder 和 BindViewHolder 给调用处处理
         simpleTypeAdapter = SimpleTypeAdapter({

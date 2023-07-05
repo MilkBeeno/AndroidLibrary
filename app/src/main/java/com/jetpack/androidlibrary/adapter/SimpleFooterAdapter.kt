@@ -7,7 +7,7 @@ import com.example.page.AppendState
 import com.example.page.PagingFooterAdapter
 import com.jetpack.androidlibrary.databinding.ItemFooterBinding
 
-class SimpleFooterAdapter : PagingFooterAdapter<ItemFooterBinding>(
+fun simpleFooterAdapter() = PagingFooterAdapter<ItemFooterBinding>(
     // 创建 ViewHolder 反射原理
     create = { viewHolder() },
     // 设置每页请求最大数量

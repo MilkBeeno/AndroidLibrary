@@ -12,14 +12,15 @@ import com.example.common.ViewBindingViewHolder
  * @param create 使用 viewBindingViewHolder() 来创建
  * @param clickScope 表示头部点击事件相关的逻辑在这处理
  * @param convert 表示绑定 ViewHolder 后给创建者的一个回调
- * @param display 根据加载的状态是否显示头部、可由外部进行控制
  */
-open class PagingHeaderAdapter<V : ViewBinding>(
+class PagingHeaderAdapter<V : ViewBinding>(
     private val create: ViewGroup.() -> ViewBindingViewHolder<V>,
     private var clickScope: (ViewBindingViewHolder<V>.() -> Unit)? = null,
-    private val convert: (ViewBindingViewHolder<V>.(RefreshState) -> Unit)? = null,
-    private val display: (LoadState) -> Boolean = { true }
+    private val convert: (ViewBindingViewHolder<V>.() -> Unit)? = null
 ) : LoadStateAdapter<ViewBindingViewHolder<V>>() {
+
+    // 当为绑定头部时需要展示头部并刷新一次界面
+    private var isNotBindViewHolder: Boolean = true
 
     override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): ViewBindingViewHolder<V> {
         val viewHolder = create(parent)
@@ -27,41 +28,30 @@ open class PagingHeaderAdapter<V : ViewBinding>(
         return viewHolder
     }
 
+    // 当 LoadStateAdapter 头部时 LoadState 的值始终为 LoadState.NotLoading
     override fun onBindViewHolder(holder: ViewBindingViewHolder<V>, loadState: LoadState) {
-
-        when (loadState) {
-            is LoadState.Loading -> {
-                convert?.invoke(holder, RefreshState.Loading)
-            }
-
-            is LoadState.Error -> {
-                convert?.invoke(holder, RefreshState.Error)
-            }
-
-            is LoadState.NotLoading -> {
-                convert?.invoke(holder, RefreshState.Success)
-            }
-        }
+        isNotBindViewHolder = false
+        convert?.invoke(holder)
     }
 
     override fun displayLoadStateAsItem(loadState: LoadState): Boolean {
-        return display(loadState)
+        return isNotBindViewHolder
     }
 }
 
 /**
  * 使用 ViewBinding 封装 Paging3 的 PagingFooter 尾部，在 Footer 中有三个状态将会被用到 Loading、Success、NoMoreData。
  *
- * @param create 使用 viewBindingViewHolder() 来创建
  * @param pageSize 表示每一页的大小
  * @param hasHeader 表示是否有头部、用于计算是否还有更多数据
+ * @param create 使用 viewBindingViewHolder() 来创建
  * @param clickScope 表示尾部点击事件相关的逻辑在这处理
  * @param convert 表示绑定 ViewHolder 后给创建者的一个回调
  */
-open class PagingFooterAdapter<V : ViewBinding>(
+class PagingFooterAdapter<V : ViewBinding>(
+    private var pageSize: Int,
+    private var hasHeader: Boolean,
     private val create: ViewGroup.() -> ViewBindingViewHolder<V>,
-    private var pageSize: Int = 0,
-    private var hasHeader: Boolean = false,
     private var clickScope: (ViewBindingViewHolder<V>.() -> Unit)? = null,
     private val convert: (ViewBindingViewHolder<V>.(AppendState) -> Unit)? = null,
 ) : LoadStateAdapter<ViewBindingViewHolder<V>>() {
