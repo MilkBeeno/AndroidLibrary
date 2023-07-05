@@ -13,20 +13,20 @@ import androidx.viewbinding.ViewBinding
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-/** Activity 中获取视图 ViewBinding 设置视图并进行绑定 */
+// Activity 中获取视图 ViewBinding 设置视图并进行绑定
 inline fun <reified V : ViewBinding> Activity.viewBinding() = lazy { inflateBinding<V>(layoutInflater).apply { setContentView(root) } }
 
-/** Dialog 中获取视图 ViewBinding 设置视图并进行绑定 */
+// Dialog 中获取视图 ViewBinding 设置视图并进行绑定
 inline fun <reified V : ViewBinding> Dialog.viewBinding() = lazy { inflateBinding<V>(layoutInflater).apply { setContentView(root) } }
 
-/** 反射获取 ViewBinging 实例 */
+// 反射获取 ViewBinging 实例
 inline fun <reified V : ViewBinding> inflateBinding(layoutInflater: LayoutInflater) =
     V::class.java.getMethod("inflate", LayoutInflater::class.java).invoke(null, layoutInflater) as V
 
-/** Fragment 中获取视图 ViewBinding 设置视图并进行绑定 */
+// Fragment 中获取视图 ViewBinding 设置视图并进行绑定
 inline fun <reified V : ViewBinding> Fragment.viewBinding() = FragmentBindingDelegate(V::class.java)
 
-/** Activity 中获取视图 ViewBinding 设置视图并进行绑定 */
+// Activity 中获取视图 ViewBinding 设置视图并进行绑定
 class FragmentBindingDelegate<V : ViewBinding>(private val clazz: Class<V>) : ReadOnlyProperty<Fragment, V> {
     private var binding: V? = null
 
@@ -46,17 +46,17 @@ class FragmentBindingDelegate<V : ViewBinding>(private val clazz: Class<V>) : Re
     }
 }
 
-/** 通过反射获取 ViewHolderBinding 然后创建 ViewBindingViewHolder。 */
+// 通过反射获取 ViewHolderBinding 然后创建 ViewBindingViewHolder
 inline fun <reified V : ViewBinding> ViewGroup.viewHolder(): ViewBindingViewHolder<V> {
     val method = V::class.java.getMethod("inflate", LayoutInflater::class.java, ViewGroup::class.java, Boolean::class.java)
     val binding = method.invoke(null, LayoutInflater.from(context), this, false) as V
     return ViewBindingViewHolder(binding)
 }
 
-/** 使用 ViewBinding 方式的 ViewHolder。 */
+// 使用 ViewBinding 方式的 ViewHolder
 class ViewBindingViewHolder<V : ViewBinding>(val binding: V) : RecyclerView.ViewHolder(binding.root)
 
-/** 对 ViewHolder 进行强转成 ViewBindingViewHolder 类型。 */
+// 对 ViewHolder 进行强转成 ViewBindingViewHolder 类型
 inline fun <reified V : ViewBinding> RecyclerView.ViewHolder.convertViewBinding(): V {
     return (this as ViewBindingViewHolder<V>).binding
 }
