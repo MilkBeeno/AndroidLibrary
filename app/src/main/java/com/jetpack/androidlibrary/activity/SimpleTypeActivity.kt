@@ -58,7 +58,7 @@ class SimpleTypeActivity : AppCompatActivity() {
 
         // 通过观察请求网络数据或添加本地数据
         lifecycle.coroutineScope.launch {
-            simpleTypeViewModel.pageWrapper.flow.collectLatest {
+            simpleTypeViewModel.pager.flow.collectLatest {
                 simpleTypeAdapter.submitData(lifecycle, it)
             }
         }

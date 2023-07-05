@@ -99,7 +99,7 @@ class MultipleTypeActivity : AppCompatActivity() {
 
         // 通过观察请求网络数据或添加本地数据
         lifecycle.coroutineScope.launch {
-            multipleTypeViewModel.pageWrapper.flow.collectLatest {
+            multipleTypeViewModel.pager.flow.collectLatest {
                 multipleTypeAdapter.submitData(it)
             }
         }
