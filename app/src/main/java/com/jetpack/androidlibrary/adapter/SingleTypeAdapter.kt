@@ -3,10 +3,11 @@ package com.jetpack.androidlibrary.adapter
 import android.util.Log
 import androidx.recyclerview.widget.DiffUtil
 import com.example.common.viewHolder
+import com.example.page.AppendState
 import com.example.page.RefreshState
-import com.example.page.SimplePagingDataAdapter
+import com.example.page.SinglePagingDataAdapter
 import com.jetpack.androidlibrary.R
-import com.jetpack.androidlibrary.data.SimpleTypeModel
+import com.jetpack.androidlibrary.data.SingleTypeModel
 import com.jetpack.androidlibrary.databinding.ItemUserBinding
 
 /**
@@ -14,11 +15,13 @@ import com.jetpack.androidlibrary.databinding.ItemUserBinding
  *
  * @property listener 表示子项中单个手势事件回调结果、按单个创建不同回调给 Activity
  */
-class SimpleTypeAdapter(
+class SingleTypeAdapter(
     // 创建单个手势事件回调、细分每个子项
     private val listener: (String) -> Unit,
     private var refresh: () -> Unit
-) : SimplePagingDataAdapter<SimpleTypeModel, ItemUserBinding>(
+) : SinglePagingDataAdapter<SingleTypeModel, ItemUserBinding>(
+    // 是否有头部影响刷新和加载更多状态
+    hasHeader = true,
     // 创建 viewHolder
     create = { viewHolder() },
     // 对 itemView 进行数据绑定
@@ -35,27 +38,48 @@ class SimpleTypeAdapter(
             listener(itemModel.name)
         }
     },
-    hasHeader = true,
     refreshedListener = {
         when (it) {
-            RefreshState.Error -> {
-                Log.d("hlc", "发生了错误")
+            RefreshState.Loading -> {
+                Log.d("hlc", "SimpleHeader Loading")
             }
 
             RefreshState.Success -> {
+                Log.d("hlc", "SimpleHeader Success")
                 refresh()
+            }
+
+            RefreshState.Error -> {
+                Log.d("hlc", "SimpleHeader Error")
+            }
+
+            else -> Unit
+        }
+    },
+    appendedListener = {
+        when (it) {
+            AppendState.Loading -> {
+                Log.d("hlc", "SimpleFooter Loading")
+            }
+
+            AppendState.Success -> {
+                Log.d("hlc", "SimpleFooter Success")
+            }
+
+            AppendState.Error -> {
+                Log.d("hlc", "SimpleFooter Error")
             }
 
             else -> Unit
         }
     },
     // 增量更新条件
-    diffCallback = object : DiffUtil.ItemCallback<SimpleTypeModel>() {
-        override fun areItemsTheSame(oldItem: SimpleTypeModel, newItem: SimpleTypeModel): Boolean {
+    diffCallback = object : DiffUtil.ItemCallback<SingleTypeModel>() {
+        override fun areItemsTheSame(oldItem: SingleTypeModel, newItem: SingleTypeModel): Boolean {
             return oldItem.name == newItem.name
         }
 
-        override fun areContentsTheSame(oldItem: SimpleTypeModel, newItem: SimpleTypeModel): Boolean {
+        override fun areContentsTheSame(oldItem: SingleTypeModel, newItem: SingleTypeModel): Boolean {
             return oldItem.name == newItem.name
         }
     }

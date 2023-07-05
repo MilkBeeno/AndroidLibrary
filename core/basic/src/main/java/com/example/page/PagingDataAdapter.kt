@@ -30,11 +30,11 @@ import com.example.common.ViewBindingViewHolder
  * @param appendedListener 上拉加载更多状态监听
  * @param diffCallback 增量更新的条件
  */
-open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
+open class SinglePagingDataAdapter<T : Any, V : ViewBinding>(
+    private val hasHeader: Boolean,
     private var create: (ViewGroup.() -> ViewBindingViewHolder<V>),
     private var convert: (ViewBindingViewHolder<V>.(T, Int) -> Unit)? = null,
-    private var clickScope: (ViewBindingViewHolder<V>.(SimplePagingDataAdapter<T, V>, Boolean) -> Unit)? = null,
-    private val hasHeader: Boolean = false,
+    private var clickScope: (ViewBindingViewHolder<V>.(SinglePagingDataAdapter<T, V>, Boolean) -> Unit)? = null,
     private var refreshedListener: ((RefreshState) -> Unit)? = null,
     private var appendedListener: ((AppendState) -> Unit)? = null,
     private var diffCallback: DiffUtil.ItemCallback<T> = diffUtil()
@@ -60,7 +60,7 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
                     }
                 }
 
-                else -> {
+                is LoadState.Error -> {
                     isRefreshing = false
                     refreshedListener?.invoke(if (itemCount < maxCount) RefreshState.Error else RefreshState.Failed)
                 }
@@ -92,7 +92,7 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewBindingViewHolder<V> {
         return create(parent).apply {
-            clickScope?.invoke(this, this@SimplePagingDataAdapter, hasHeader)
+            clickScope?.invoke(this, this@SinglePagingDataAdapter, hasHeader)
         }
     }
 

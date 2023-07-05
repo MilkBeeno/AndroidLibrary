@@ -1,7 +1,6 @@
 package com.jetpack.androidlibrary.adapter
 
 import android.widget.Toast
-import com.example.common.ViewBindingViewHolder
 import com.example.common.viewHolder
 import com.example.page.PagingHeaderAdapter
 import com.jetpack.androidlibrary.databinding.ItemHeaderBinding

@@ -19,7 +19,7 @@
             android:name=".activity.MultipleTypeActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.SimpleTypeActivity"
+            android:name=".activity.SingleTypeActivity"
             android:exported="false" />
         <activity
             android:name=".activity.MainActivity"

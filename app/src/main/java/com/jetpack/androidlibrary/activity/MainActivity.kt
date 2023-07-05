@@ -11,7 +11,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding.simpleType.setOnClickListener {
-            SimpleTypeActivity.create(this)
+            SingleTypeActivity.create(this)
         }
         binding.multipleType.setOnClickListener {
             MultipleTypeActivity.create(this)
