@@ -18,6 +18,8 @@ class MultipleTypeAdapter(
     // 创建单个手势事件回调、细分每个子项
     private val listener: (String) -> Unit
 ) : MultiplePagingDataAdapter<MultipleTypeModel>(
+    // 是否有头部影响刷新和加载更多状态
+    hasHeader = true,
     // 为每个子项设置类型 type 值
     viewType = { type },
     // 创建 viewHolder
@@ -44,12 +46,12 @@ class MultipleTypeAdapter(
         }
     },
     // 点击事件区域
-    clickScope = { type, adapter, hasHeader ->
+    clickScope = { type, adapter ->
         when (type) {
             0 -> {
                 val binding = convertViewBinding<ItemUserBinding>()
                 binding.root.setOnClickListener {
-                    val itemModel = adapter.getNotNullItem(absoluteAdapterPosition - if (hasHeader) 1 else 0)
+                    val itemModel = adapter.getNotNullItem(absoluteAdapterPosition - 1)
                     listener(itemModel.user?.name.toString())
                 }
             }
@@ -60,7 +62,6 @@ class MultipleTypeAdapter(
             }
         }
     },
-    hasHeader = true,
     refreshedListener = {
         when (it) {
             RefreshState.Error -> {

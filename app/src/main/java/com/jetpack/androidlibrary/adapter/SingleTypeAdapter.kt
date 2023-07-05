@@ -25,16 +25,16 @@ class SingleTypeAdapter(
     // 创建 viewHolder
     create = { viewHolder() },
     // 对 itemView 进行数据绑定
-    convert = { data, position ->
+    convert = { data, _ ->
         binding.ivUserAvatar.setImageResource(R.drawable.ic_launcher_background)
         binding.tvUserName.text = data.name
         binding.tvUserDescribe.text = data.describe
     },
     // 点击事件区域
-    clickScope = { adapter, hasHeader ->
+    clickScope = { adapter ->
         binding.root.setOnClickListener {
             // 因为在 RecyclerView 中添加了头部 Adapter 所以 absoluteAdapterPosition 的位置 index 是不正确的应当减 1
-            val itemModel = adapter.getNotNullItem(absoluteAdapterPosition - if (hasHeader) 1 else 0)
+            val itemModel = adapter.getNotNullItem(absoluteAdapterPosition - 1)
             listener(itemModel.name)
         }
     },
