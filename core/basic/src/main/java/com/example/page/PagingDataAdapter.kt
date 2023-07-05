@@ -60,7 +60,7 @@ open class SimplePagingDataAdapter<T : Any, V : ViewBinding>(
                     }
                 }
 
-                else -> {
+                is LoadState.Error -> {
                     isRefreshing = false
                     refreshedListener?.invoke(if (itemCount < maxCount) RefreshState.Error else RefreshState.Failed)
                 }
